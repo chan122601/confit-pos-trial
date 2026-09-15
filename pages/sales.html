@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales | CONFIT STORE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/gonzcore_motion.css">
+
+    <style>
+        .sales-page {
+            padding: 32px 42px;
+            max-width: 1600px;
+            margin: auto;
+        }
+
+        .sales-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .sales-heading h2 {
+            margin-top: 7px;
+            font-family: "Playfair Display", Georgia, serif;
+            font-size: 36px;
+            letter-spacing: -1px;
+        }
+
+        .sales-heading p {
+            margin-top: 7px;
+            color: #7d869a;
+            font-size: 12px;
+        }
+
+        .sales-refresh {
+            min-height: 42px;
+            padding: 0 18px;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.045);
+            color: #c4b5fd;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .sales-refresh:hover {
+            background: rgba(255,255,255,0.09);
+            transform: translateY(-2px);
+        }
+
+        .sales-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .sales-stat {
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 15px;
+            background: rgba(255,255,255,0.045);
+            backdrop-filter: blur(18px);
+        }
+
+        .sales-stat-label {
+            color: #858da0;
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        .sales-stat-value {
+            margin-top: 8px;
+            color: #f5f5f8;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .sales-stat-small {
+            margin-top: 4px;
+            color: #626b7f;
+            font-size: 9px;
+        }
+
+        .sales-panel {
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            background: rgba(255,255,255,0.045);
+            backdrop-filter: blur(18px);
+        }
+
+        .sales-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sales-search {
+            flex: 1;
+            height: 44px;
+            padding: 0 15px;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px;
+            outline: none;
+            background: rgba(255,255,255,0.055);
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .sales-search::placeholder {
+            color: #697287;
+        }
+
+        .sales-date {
+            width: 170px;
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px;
+            outline: none;
+            background: #171a28;
+            color: #ffffff;
+            font-size: 11px;
+        }
+
+        .sales-filter,
+        .sales-date-range {
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px;
+            outline: none;
+            background: #171a28;
+            color: #ffffff;
+            font-size: 11px;
+        }
+
+        .sales-filter {
+            min-width: 150px;
+        }
+
+        .sales-date-range {
+            width: 145px;
+        }
+
+        .sales-date-range[hidden] {
+            display: none;
+        }
+
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sales-table th {
+            padding: 13px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            color: #687186;
+            text-align: left;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sales-table td {
+            padding: 14px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.055);
+            color: #b9c0cf;
+            font-size: 11px;
+        }
+
+        .sales-table tbody tr {
+            transition: 0.25s ease;
+        }
+
+        .sales-table tbody tr:hover {
+            background: rgba(255,255,255,0.025);
+        }
+
+        .sales-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .transaction-id {
+            color: #c4b5fd;
+            font-weight: 700;
+            font-size: 10px;
+        }
+
+        .sale-date {
+            color: #d3d7e0;
+            font-size: 10px;
+        }
+
+        .sale-time {
+            margin-top: 4px;
+            color: #626b7f;
+            font-size: 9px;
+        }
+
+        .sale-staff {
+            color: #d6dae3;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .sale-staff-role {
+            margin-top: 4px;
+            color: #626b7f;
+            font-size: 9px;
+        }
+
+        .sale-items {
+            max-width: 300px;
+            color: #d6dae3;
+            line-height: 1.5;
+        }
+
+        .sale-item-line {
+            display: block;
+        }
+
+        .item-more {
+            color: #6d7588;
+            font-size: 9px;
+        }
+
+        .sale-total {
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .sale-cash {
+            color: #9da5b6;
+        }
+
+        .sale-change {
+            color: #6ee7b7;
+            font-weight: 700;
+        }
+
+
+        .payment-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 76px;
+            padding: 6px 9px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.04);
+            color: #d6dae3;
+            font-size: 9px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .payment-badge.gcash {
+            border-color: rgba(196,181,253,0.18);
+            background: rgba(196,181,253,0.08);
+            color: #c4b5fd;
+        }
+
+        .payment-badge.cash {
+            color: #9da5b6;
+        }
+
+        .sale-reference {
+            display: block;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #aeb6c7;
+            font-size: 9px;
+        }
+
+        .sale-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .sale-action {
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.04);
+            color: #aab2c2;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .sale-action:hover {
+            background: rgba(255,255,255,0.09);
+            color: #ffffff;
+        }
+
+        .empty-sales {
+            padding: 70px 20px;
+            text-align: center;
+            color: #6c7589;
+        }
+
+        .empty-sales-icon {
+            margin-bottom: 10px;
+            color: #b4a7df;
+            font-size: 32px;
+        }
+
+        .empty-sales strong {
+            display: block;
+            color: #aeb6c7;
+            font-size: 13px;
+        }
+
+        .empty-sales span {
+            display: block;
+            margin-top: 5px;
+            font-size: 10px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(2,4,10,0.72);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .sale-modal {
+            width: min(520px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 26px;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 20px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(25,28,45,0.98),
+                    rgba(14,17,30,0.98)
+                );
+            box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin-top: 7px;
+            font-family: "Playfair Display", Georgia, serif;
+            font-size: 25px;
+        }
+
+        .modal-header p {
+            margin-top: 5px;
+            color: #70798d;
+            font-size: 10px;
+        }
+
+        .close-modal {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.04);
+            color: #8d96aa;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .sale-details {
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.025);
+            overflow: hidden;
+        }
+
+        .sale-detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 11px 13px;
+            border-bottom: 1px solid rgba(255,255,255,0.055);
+            color: #8d96aa;
+            font-size: 10px;
+        }
+
+        .sale-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .sale-detail-row strong {
+            color: #ffffff;
+            text-align: right;
+        }
+
+        .modal-items {
+            margin-top: 15px;
+        }
+
+        .modal-items-title {
+            margin-bottom: 9px;
+            color: #8992a6;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .modal-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.07);
+            color: #d5d9e2;
+            font-size: 10px;
+        }
+
+        .modal-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-item-meta {
+            margin-top: 3px;
+            color: #626b7f;
+            font-size: 8px;
+        }
+
+        .modal-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 13px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 9px;
+            margin-top: 20px;
+        }
+
+        .modal-button {
+            flex: 1;
+            height: 42px;
+            border-radius: 9px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-close-button {
+            border: 1px solid rgba(255,255,255,0.09);
+            background: rgba(255,255,255,0.04);
+            color: #aeb6c7;
+        }
+
+        .modal-print-button {
+            border: none;
+            background: linear-gradient(135deg, #ffffff, #c4b5fd);
+            color: #171323;
+        }
+
+        .print-receipt-area {
+            display: none;
+        }
+
+        @media print {
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            .print-receipt-area,
+            .print-receipt-area * {
+                visibility: visible !important;
+            }
+
+            .print-receipt-area {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+                background: #ffffff;
+                color: #111111;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .print-receipt {
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .print-header {
+                text-align: center;
+                padding-bottom: 15px;
+                border-bottom: 2px dashed #111111;
+            }
+
+            .print-header h1 {
+                margin: 0;
+                font-size: 25px;
+            }
+
+            .print-header p {
+                margin: 6px 0 0;
+                font-size: 12px;
+                color: #555555;
+            }
+
+            .print-info {
+                padding: 15px 0;
+                border-bottom: 1px dashed #999999;
+            }
+
+            .print-info-row {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+                padding: 4px 0;
+                font-size: 12px;
+            }
+
+            .print-items {
+                padding: 10px 0;
+            }
+
+            .print-item {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 3px 15px;
+                padding: 10px 0;
+                border-bottom: 1px dashed #dddddd;
+            }
+
+            .print-item-name {
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .print-item-qty {
+                font-size: 10px;
+                color: #555555;
+            }
+
+            .print-item-total {
+                grid-column: 2;
+                grid-row: 1 / 3;
+                align-self: center;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .print-summary {
+                margin-top: 15px;
+                padding-top: 12px;
+                border-top: 2px solid #111111;
+            }
+
+            .print-summary-row {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+                padding: 5px 0;
+                font-size: 12px;
+            }
+
+            .print-total {
+                margin-top: 7px;
+                padding-top: 10px;
+                border-top: 1px solid #111111;
+                font-size: 18px;
+                font-weight: 800;
+            }
+
+            .print-footer {
+                margin-top: 25px;
+                padding-top: 15px;
+                border-top: 2px dashed #111111;
+                text-align: center;
+                font-size: 11px;
+                color: #555555;
+                line-height: 1.6;
+            }
+
+            @page {
+                margin: 10mm;
+            }
+        }
+
+        @media (max-width: 1000px) {
+
+            .sales-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sales-panel {
+                overflow-x: auto;
+            }
+
+            .sales-table {
+                min-width: 1180px;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sales-page {
+                padding: 25px 20px;
+            }
+
+            .sales-heading {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .sales-refresh {
+                width: 100%;
+            }
+
+            .sales-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .sales-toolbar {
+                flex-direction: column;
+            }
+
+            .sales-date {
+                width: 100%;
+            }
+
+            .sales-filter,
+            .sales-date-range {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="background">
+        <div class="glow glow-one"></div>
+        <div class="glow glow-two"></div>
+        <div class="glow glow-three"></div>
+        <div id="particles"></div>
+    </div>
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-mark">C</div>
+
+            <div>
+                <h1>CONFIT</h1>
+                
+            </div>
+        </div>
+
+        <nav class="navigation">
+
+            <a href="../index.html" class="nav-item">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="pos.html" class="nav-item">
+                <span class="nav-icon">▣</span>
+                <span>POS</span>
+            </a>
+
+            <a href="products.html" class="nav-item">
+                <span class="nav-icon">◇</span>
+                <span>Products</span>
+            </a>
+
+            <a href="inventory.html" class="nav-item">
+                <span class="nav-icon">▤</span>
+                <span>Inventory</span>
+            </a>
+
+            <a href="sales.html" class="nav-item active">
+                <span class="nav-icon">◈</span>
+                <span>Sales</span>
+            </a>
+
+            <a href="customers.html" class="nav-item">
+                <span class="nav-icon">♙</span>
+                <span>Customers</span>
+            </a>
+
+            <a href="reports.html" class="nav-item">
+                <span class="nav-icon">◫</span>
+                <span>Reports</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="settings.html" class="nav-item">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+
+                <div>
+                    <strong>Offline Mode</strong>
+                    <small>Data stored locally</small>
+                </div>
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="mobile-brand">
+                <strong>CONFIT</strong>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="live-time">
+                    <span class="live-dot"></span>
+                    <span id="liveTime">00:00:00</span>
+                </div>
+
+                <div class="profile">
+
+                    <div class="profile-avatar">
+                        C
+                    </div>
+
+                    <div class="profile-info">
+                        <strong>Administrator</strong>
+                        <span>Owner</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="sales-page">
+
+            <div class="sales-heading">
+
+                <div>
+
+                    <span class="eyebrow">
+                        CONFIT STORE
+                    </span>
+
+                    <h2>
+                        Sales Management
+                    </h2>
+
+                    <p>
+                        Review completed transactions and monitor your store sales.
+                    </p>
+
+                </div>
+
+                <button
+                    class="sales-refresh"
+                    id="refreshSales"
+                    type="button"
+                >
+                    ↻ Refresh Sales
+                </button>
+
+            </div>
+
+            <div class="sales-stats">
+
+                <div class="sales-stat">
+
+                    <div class="sales-stat-label">
+                        TOTAL SALES
+                    </div>
+
+                    <div
+                        class="sales-stat-value"
+                        id="totalSales"
+                    >
+                        ₱0.00
+                    </div>
+
+                    <div class="sales-stat-small">
+                        All completed sales
+                    </div>
+
+                </div>
+
+                <div class="sales-stat">
+
+                    <div class="sales-stat-label">
+                        TRANSACTIONS
+                    </div>
+
+                    <div
+                        class="sales-stat-value"
+                        id="totalTransactions"
+                    >
+                        0
+                    </div>
+
+                    <div class="sales-stat-small">
+                        Completed transactions
+                    </div>
+
+                </div>
+
+                <div class="sales-stat">
+
+                    <div class="sales-stat-label">
+                        ITEMS SOLD
+                    </div>
+
+                    <div
+                        class="sales-stat-value"
+                        id="itemsSold"
+                    >
+                        0
+                    </div>
+
+                    <div class="sales-stat-small">
+                        Total units sold
+                    </div>
+
+                </div>
+
+                <div class="sales-stat">
+
+                    <div class="sales-stat-label">
+                        TODAY'S SALES
+                    </div>
+
+                    <div
+                        class="sales-stat-value"
+                        id="todaySales"
+                    >
+                        ₱0.00
+                    </div>
+
+                    <div class="sales-stat-small">
+                        Sales made today
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="sales-panel">
+
+                <div class="sales-toolbar">
+
+                    <input
+                        type="text"
+                        id="salesSearch"
+                        class="sales-search"
+                        placeholder="Search transaction or product..."
+                    >
+
+                    <select id="salesDateFilter" class="sales-filter" aria-label="Date filter">
+                        <option value="all">All Dates</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="last7">Last 7 Days</option>
+                        <option value="thisWeek">This Week</option>
+                        <option value="thisMonth">This Month</option>
+                        <option value="lastMonth">Last Month</option>
+                        <option value="custom">Custom Date Range</option>
+                    </select>
+
+                    <input type="date" id="salesStartDate" class="sales-date-range" aria-label="Start date" hidden>
+                    <input type="date" id="salesEndDate" class="sales-date-range" aria-label="End date" hidden>
+
+                    <select id="salesPaymentFilter" class="sales-filter" aria-label="Payment method filter">
+                        <option value="all">All Payments</option>
+                        <option value="Cash">Cash</option>
+                        <option value="GCash">GCash</option>
+                    </select>
+
+                    <select id="salesStaffFilter" class="sales-filter" aria-label="Staff filter">
+                        <option value="all">All Staff</option>
+                    </select>
+
+                </div>
+
+                <div id="salesTableContainer"></div>
+
+            </div>
+
+        </section>
+
+        <footer>
+            <span>Powered by Opticore</span>
+            <span>POS SYSTEM</span>
+        </footer>
+
+    </main>
+
+    <div
+        class="modal-overlay"
+        id="saleModal"
+    >
+
+        <div class="sale-modal">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        TRANSACTION DETAILS
+                    </span>
+
+                    <h3>
+                        Sale Details
+                    </h3>
+
+                    <p>
+                        Complete information for this transaction.
+                    </p>
+
+                </div>
+
+                <button
+                    class="close-modal"
+                    id="closeSaleModal"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <div id="saleDetails"></div>
+
+            <div class="modal-actions">
+
+                <button
+                    class="modal-button modal-close-button"
+                    id="closeSaleButton"
+                    type="button"
+                >
+                    Close
+                </button>
+
+                <button
+                    class="modal-button modal-print-button"
+                    id="printSaleButton"
+                    type="button"
+                >
+                    Print Receipt
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        id="printReceiptArea"
+        class="print-receipt-area"
+    ></div>
+
+    <script src="../js/app.js"></script>
+
+    <script>
+        const SALES_STORAGE_KEY = "gonzcoreClothingSales";
+
+        let sales = [];
+        let selectedSale = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            loadSales();
+
+            renderSales();
+
+            document
+                .getElementById("salesSearch")
+                .addEventListener(
+                    "input",
+                    renderSales
+                );
+
+            document
+                .getElementById("salesDateFilter")
+                .addEventListener("change", function() {
+                    toggleCustomDateInputs();
+                    renderSales();
+                });
+
+            ["salesStartDate", "salesEndDate", "salesPaymentFilter", "salesStaffFilter"]
+                .forEach(function(id) {
+                    document.getElementById(id).addEventListener("change", renderSales);
+                });
+
+            document
+                .getElementById("refreshSales")
+                .addEventListener(
+                    "click",
+                    function() {
+
+                        loadSales();
+
+                        renderSales();
+
+                    }
+                );
+
+            document
+                .getElementById("closeSaleModal")
+                .addEventListener(
+                    "click",
+                    closeSaleModal
+                );
+
+            document
+                .getElementById("closeSaleButton")
+                .addEventListener(
+                    "click",
+                    closeSaleModal
+                );
+
+            document
+                .getElementById("printSaleButton")
+                .addEventListener(
+                    "click",
+                    printSelectedSale
+                );
+
+            document
+                .getElementById("saleModal")
+                .addEventListener(
+                    "click",
+                    function(event) {
+
+                        if (event.target === this) {
+                            closeSaleModal();
+                        }
+
+                    }
+                );
+
+        });
+
+        window.addEventListener("storage", function(event) {
+
+            if (event.key === SALES_STORAGE_KEY) {
+
+                loadSales();
+
+                renderSales();
+
+            }
+
+        });
+
+        function loadSales() {
+
+            const saved =
+                localStorage.getItem(
+                    SALES_STORAGE_KEY
+                );
+
+            if (!saved) {
+
+                sales = [];
+
+                populateStaffFilter();
+
+                return;
+            }
+
+            try {
+
+                sales = JSON.parse(saved);
+
+                if (!Array.isArray(sales)) {
+                    sales = [];
+                }
+
+            } catch (error) {
+
+                sales = [];
+
+            }
+
+            populateStaffFilter();
+
+        }
+
+        function populateStaffFilter() {
+
+            const select = document.getElementById("salesStaffFilter");
+            const currentValue = select.value;
+            const staff = [];
+            const seen = {};
+
+            sales.forEach(function(sale) {
+                const identity = getSaleStaffIdentity(sale);
+                const key = identity.id || identity.name;
+
+                if (!seen[key]) {
+                    seen[key] = true;
+                    staff.push({
+                        id: identity.id,
+                        name: identity.name,
+                        key: key
+                    });
+                }
+            });
+
+            staff.sort(function(first, second) {
+                return first.name.localeCompare(second.name);
+            });
+
+            select.innerHTML = '<option value="all">All Staff</option>' +
+                staff.map(function(identity) {
+                    return '<option value="' + escapeHTML(identity.key) + '">' +
+                        escapeHTML(identity.name) + '</option>';
+                }).join("");
+
+            if (staff.some(function(identity) { return identity.key === currentValue; })) {
+                select.value = currentValue;
+            }
+
+        }
+
+        function getFilteredSales() {
+
+            const search = document.getElementById("salesSearch").value.toLowerCase().trim();
+            const dateFilter = document.getElementById("salesDateFilter").value;
+            const paymentFilter = document.getElementById("salesPaymentFilter").value;
+            const staffFilter = document.getElementById("salesStaffFilter").value;
+            const today = new Date();
+            const todayKey = getDateKey(today);
+            const yesterdayKey = getDateKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1));
+            const startDate = document.getElementById("salesStartDate").value;
+            const endDate = document.getElementById("salesEndDate").value;
+
+            return sales.filter(function(sale) {
+                const transaction = String(sale.transaction || "").toLowerCase();
+                const itemsText = (sale.items || []).map(function(item) {
+                    return String(item.name || "").toLowerCase();
+                }).join(" ");
+                const saleDate = getSaleDateKey(sale);
+                const identity = getSaleStaffIdentity(sale);
+                const normalizedPayment = String(sale.paymentMethod || "Cash").toLowerCase();
+                let matchesDate = true;
+
+                if (dateFilter === "today") {
+                    matchesDate = saleDate === todayKey;
+                } else if (dateFilter === "yesterday") {
+                    matchesDate = saleDate === yesterdayKey;
+                } else if (dateFilter === "last7") {
+                    matchesDate = saleDate >= getDateKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6)) && saleDate <= todayKey;
+                } else if (dateFilter === "thisWeek") {
+                    const weekStart = new Date(today);
+                    weekStart.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+                    matchesDate = saleDate >= getDateKey(weekStart) && saleDate <= todayKey;
+                } else if (dateFilter === "thisMonth") {
+                    matchesDate = saleDate >= getDateKey(new Date(today.getFullYear(), today.getMonth(), 1)) && saleDate <= todayKey;
+                } else if (dateFilter === "lastMonth") {
+                    matchesDate = saleDate >= getDateKey(new Date(today.getFullYear(), today.getMonth() - 1, 1)) && saleDate < getDateKey(new Date(today.getFullYear(), today.getMonth(), 1));
+                } else if (dateFilter === "custom") {
+                    matchesDate = (!startDate || saleDate >= startDate) && (!endDate || saleDate <= endDate);
+                }
+
+                return (!search || transaction.includes(search) || itemsText.includes(search)) &&
+                    matchesDate &&
+                    (paymentFilter === "all" || normalizedPayment === paymentFilter.toLowerCase()) &&
+                    (staffFilter === "all" || identity.id === staffFilter || identity.name === staffFilter);
+            });
+
+        }
+
+        function toggleCustomDateInputs() {
+            const isCustom = document.getElementById("salesDateFilter").value === "custom";
+            document.getElementById("salesStartDate").hidden = !isCustom;
+            document.getElementById("salesEndDate").hidden = !isCustom;
+        }
+
+        function getSaleStaffIdentity(sale) {
+            const id = String(sale.staffId || sale.staff_id || "").trim();
+            const name = String(sale.staffName || sale.staff || sale.staffUsername || "").trim();
+            return {
+                id: id,
+                name: name || "Unassigned/Unknown"
+            };
+        }
+
+        function getSaleDateKey(sale) {
+            if (sale.timestamp) {
+                const timestampDate = new Date(sale.timestamp);
+                if (!Number.isNaN(timestampDate.getTime())) {
+                    return getDateKey(timestampDate);
+                }
+            }
+            return convertSaleDate(sale.date);
+        }
+
+        function getDateKey(date) {
+            return date.getFullYear() + "-" +
+                String(date.getMonth() + 1).padStart(2, "0") + "-" +
+                String(date.getDate()).padStart(2, "0");
+        }
+
+        function renderSales() {
+
+            const container =
+                document.getElementById(
+                    "salesTableContainer"
+                );
+
+            const search =
+                document
+                    .getElementById("salesSearch")
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+            const filtered = getFilteredSales();
+
+            updateStats(filtered);
+
+            if (filtered.length === 0) {
+
+                container.innerHTML = `
+                    <div class="empty-sales">
+
+                        <div class="empty-sales-icon">
+                            ◈
+                        </div>
+
+                        <strong>
+                            No sales found
+                        </strong>
+
+                        <span>
+                            Completed POS transactions will appear here.
+                        </span>
+
+                    </div>
+                `;
+
+                return;
+            }
+
+            let rows = "";
+
+            filtered.forEach(function(sale, index) {
+
+                const itemCount =
+                    sale.items.reduce(
+                        function(total, item) {
+                            return total +
+                                Number(
+                                    item.quantity || 0
+                                );
+                        },
+                        0
+                    );
+
+                const visibleItems =
+                    sale.items
+                        .slice(0, 2)
+                        .map(function(item) {
+
+                            return `
+                                <span class="sale-item-line">
+                                    ${escapeHTML(item.name)}
+                                    × ${item.quantity}
+                                </span>
+                            `;
+
+                        })
+                        .join("");
+
+                const extraItems =
+                    sale.items.length > 2
+                        ? `
+                            <span class="item-more">
+                                + ${sale.items.length - 2} more item(s)
+                            </span>
+                        `
+                        : "";
+
+                rows += `
+                    <tr>
+
+                        <td>
+                            <span class="transaction-id">
+                                ${escapeHTML(
+                                    sale.transaction ||
+                                    "Unknown"
+                                )}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <div class="sale-date">
+                                ${escapeHTML(
+                                    sale.date || ""
+                                )}
+                            </div>
+
+                            <div class="sale-time">
+                                ${escapeHTML(
+                                    sale.time || ""
+                                )}
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            <div class="sale-items">
+                                ${visibleItems}
+                                ${extraItems}
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <div class="sale-staff">
+                                ${escapeHTML(getSaleStaffIdentity(sale).name)}
+                            </div>
+                            ${sale.staffRole
+                                ? `<div class="sale-staff-role">${escapeHTML(sale.staffRole)}</div>`
+                                : ""}
+                        </td>
+
+                        <td>
+                            ${itemCount}
+                        </td>
+
+                        <td>
+                            <span class="sale-total">
+                                ${formatMoney(sale.total)}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="payment-badge ${String(sale.paymentMethod || "Cash").toLowerCase() === "gcash" ? "gcash" : "cash"}">
+                                ${String(sale.paymentMethod || "Cash").toLowerCase() === "gcash" ? "📱 GCash" : "💵 Cash"}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="sale-reference">
+                                ${sale.paymentMethod === "GCash" && sale.referenceNumber
+                                    ? escapeHTML(sale.referenceNumber)
+                                    : "—"}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <div class="sale-actions">
+
+                                <button
+                                    class="sale-action"
+                                    type="button"
+                                    title="View Sale"
+                                    onclick="viewSale(${index})"
+                                >
+                                    ◉
+                                </button>
+
+                                <button
+                                    class="sale-action"
+                                    type="button"
+                                    title="Print Receipt"
+                                    onclick="printSaleByIndex(${index})"
+                                >
+                                    ⎙
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                `;
+
+            });
+
+            container.innerHTML = `
+
+                <table class="sales-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Transaction</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Staff</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Reference</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+                        ${rows}
+                    </tbody>
+
+                </table>
+
+            `;
+
+        }
+
+        function updateStats(filtered) {
+
+            filtered = filtered || getFilteredSales();
+
+            const totalSales =
+                filtered.reduce(
+                    function(total, sale) {
+                        return total +
+                            Number(sale.total || 0);
+                    },
+                    0
+                );
+
+            const totalTransactions =
+                filtered.length;
+
+            const itemsSold =
+                filtered.reduce(
+                    function(total, sale) {
+
+                        return total +
+                            (sale.items || []).reduce(
+                                function(itemTotal, item) {
+
+                                    return itemTotal +
+                                        Number(
+                                            item.quantity || 0
+                                        );
+
+                                },
+                                0
+                            );
+
+                    },
+                    0
+                );
+
+            const today =
+                new Date();
+
+            const todayKey =
+                today.getFullYear() +
+                "-" +
+                String(
+                    today.getMonth() + 1
+                ).padStart(2, "0") +
+                "-" +
+                String(
+                    today.getDate()
+                ).padStart(2, "0");
+
+            const todaySales =
+                filtered.reduce(
+                    function(total, sale) {
+
+                        return total +
+                            (
+                                convertSaleDate(
+                                    sale.date
+                                ) === todayKey
+                                    ? Number(
+                                        sale.total || 0
+                                    )
+                                    : 0
+                            );
+
+                    },
+                    0
+                );
+
+            document.getElementById(
+                "totalSales"
+            ).textContent =
+                formatMoney(totalSales);
+
+            document.getElementById(
+                "totalTransactions"
+            ).textContent =
+                totalTransactions;
+
+            document.getElementById(
+                "itemsSold"
+            ).textContent =
+                itemsSold;
+
+            document.getElementById(
+                "todaySales"
+            ).textContent =
+                formatMoney(todaySales);
+
+        }
+
+        function viewSale(index) {
+
+            const sale =
+                getFilteredSaleByIndex(index);
+
+            if (!sale) {
+                return;
+            }
+
+            selectedSale = sale;
+
+            const itemsHTML =
+                (sale.items || []).map(
+                    function(item) {
+
+                        return `
+                            <div class="modal-item">
+
+                                <div>
+
+                                    <strong>
+                                        ${escapeHTML(
+                                            item.name
+                                        )}
+                                    </strong>
+
+                                    <div class="modal-item-meta">
+                                        ${item.quantity}
+                                        ×
+                                        ${formatMoney(
+                                            item.price
+                                        )}
+                                    </div>
+
+                                </div>
+
+                                <strong>
+                                    ${formatMoney(
+                                        item.subtotal
+                                    )}
+                                </strong>
+
+                            </div>
+                        `;
+
+                    }
+                ).join("");
+
+            document.getElementById(
+                "saleDetails"
+            ).innerHTML = `
+
+                <div class="sale-details">
+
+                    <div class="sale-detail-row">
+                        <span>Transaction</span>
+                        <strong>
+                            ${escapeHTML(
+                                sale.transaction
+                            )}
+                        </strong>
+                    </div>
+
+                    <div class="sale-detail-row">
+                        <span>Date</span>
+                        <strong>
+                            ${escapeHTML(
+                                sale.date
+                            )}
+                        </strong>
+                    </div>
+
+                    <div class="sale-detail-row">
+                        <span>Time</span>
+                        <strong>
+                            ${escapeHTML(
+                                sale.time
+                            )}
+                        </strong>
+                    </div>
+
+                </div>
+
+                <div class="modal-items">
+
+                    <div class="modal-items-title">
+                        Purchased Items
+                    </div>
+
+                    ${itemsHTML}
+
+                </div>
+
+                <div class="modal-total">
+                    <span>Total</span>
+                    <strong>
+                        ${formatMoney(
+                            sale.total
+                        )}
+                    </strong>
+                </div>
+
+                <div class="sale-details" style="margin-top: 15px;">
+
+                    <div class="sale-detail-row">
+                        <span>Cash Received</span>
+                        <strong>
+                            ${formatMoney(
+                                sale.cash
+                            )}
+                        </strong>
+                    </div>
+
+                    <div class="sale-detail-row">
+                        <span>Change</span>
+                        <strong style="color:#6ee7b7;">
+                            ${formatMoney(
+                                sale.change
+                            )}
+                        </strong>
+                    </div>
+
+                </div>
+            `;
+
+            document
+                .getElementById("saleModal")
+                .classList.add("show");
+
+        }
+
+        function getFilteredSaleByIndex(index) {
+            return getFilteredSales()[index] || null;
+
+        }
+
+        function printSaleByIndex(index) {
+
+            const sale =
+                getFilteredSaleByIndex(index);
+
+            if (!sale) {
+                return;
+            }
+
+            selectedSale = sale;
+
+            printSale(sale);
+
+        }
+
+        function printSelectedSale() {
+
+            if (!selectedSale) {
+                return;
+            }
+
+            printSale(selectedSale);
+
+        }
+
+        function printSale(sale) {
+
+            const itemsHTML =
+                (sale.items || []).map(
+                    function(item) {
+
+                        return `
+                            <div class="print-item">
+
+                                <div class="print-item-name">
+                                    ${escapeHTML(
+                                        item.name
+                                    )}
+                                </div>
+
+                                <div class="print-item-qty">
+                                    ${item.quantity}
+                                    ×
+                                    ${formatMoney(
+                                        item.price
+                                    )}
+                                </div>
+
+                                <div class="print-item-total">
+                                    ${formatMoney(
+                                        item.subtotal
+                                    )}
+                                </div>
+
+                            </div>
+                        `;
+
+                    }
+                ).join("");
+
+            document.getElementById(
+                "printReceiptArea"
+            ).innerHTML = `
+
+                <div class="print-receipt">
+
+                    <div class="print-header">
+                        <h1>
+                            CONFIT STORE
+                        </h1>
+
+                        <p>
+                            Sales Receipt
+                        </p>
+                    </div>
+
+                    <div class="print-info">
+
+                        <div class="print-info-row">
+                            <span>
+                                Transaction
+                            </span>
+
+                            <strong>
+                                ${escapeHTML(
+                                    sale.transaction
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="print-info-row">
+                            <span>
+                                Date
+                            </span>
+
+                            <strong>
+                                ${escapeHTML(
+                                    sale.date
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="print-info-row">
+                            <span>
+                                Time
+                            </span>
+
+                            <strong>
+                                ${escapeHTML(
+                                    sale.time
+                                )}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <div class="print-items">
+                        ${itemsHTML}
+                    </div>
+
+                    <div class="print-summary">
+
+                        <div class="print-summary-row">
+                            <span>
+                                Subtotal
+                            </span>
+
+                            <strong>
+                                ${formatMoney(
+                                    sale.subtotal
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="print-summary-row">
+                            <span>
+                                Discount
+                            </span>
+
+                            <strong>
+                                ${formatMoney(
+                                    sale.discount
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="print-summary-row print-total">
+                            <span>
+                                TOTAL
+                            </span>
+
+                            <strong>
+                                ${formatMoney(
+                                    sale.total
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="print-summary-row">
+                            <span>
+                                Payment Method
+                            </span>
+
+                            <strong>
+                                ${sale.paymentMethod === "GCash" ? "GCash" : "Cash"}
+                            </strong>
+                        </div>
+
+                        ${
+                            sale.paymentMethod === "GCash"
+                                ? `
+                                    <div class="print-summary-row">
+                                        <span>
+                                            GCash Reference
+                                        </span>
+
+                                        <strong>
+                                            ${escapeHTML(sale.referenceNumber || "—")}
+                                        </strong>
+                                    </div>
+                                `
+                                : `
+                                    <div class="print-summary-row">
+                                        <span>
+                                            Cash Received
+                                        </span>
+
+                                        <strong>
+                                            ${formatMoney(sale.cash)}
+                                        </strong>
+                                    </div>
+
+                                    <div class="print-summary-row">
+                                        <span>
+                                            Change
+                                        </span>
+
+                                        <strong>
+                                            ${formatMoney(sale.change)}
+                                        </strong>
+                                    </div>
+                                `
+                        }
+
+                    </div>
+
+                    <div class="print-footer">
+
+                        <strong>
+                            Thank you for shopping with CONFIT Store!
+                        </strong>
+
+                        <br>
+
+                        CONFIT POS
+
+                    </div>
+
+                </div>
+            `;
+
+            closeSaleModal();
+
+            setTimeout(function() {
+
+                window.print();
+
+            }, 300);
+
+        }
+
+        function closeSaleModal() {
+
+            document
+                .getElementById("saleModal")
+                .classList.remove("show");
+
+        }
+
+        window.addEventListener(
+            "afterprint",
+            function() {
+
+                const printArea =
+                    document.getElementById(
+                        "printReceiptArea"
+                    );
+
+                if (printArea) {
+                    printArea.innerHTML = "";
+                }
+
+            }
+        );
+
+        function convertSaleDate(value) {
+
+            if (!value) {
+                return "";
+            }
+
+            const text =
+                String(value).trim();
+
+            const parts =
+                text.split("/");
+
+            if (parts.length === 3) {
+
+                let month =
+                    Number(parts[0]);
+
+                let day =
+                    Number(parts[1]);
+
+                let year =
+                    Number(parts[2]);
+
+                if (year < 100) {
+                    year += 2000;
+                }
+
+                return (
+                    year +
+                    "-" +
+                    String(month).padStart(2, "0") +
+                    "-" +
+                    String(day).padStart(2, "0")
+                );
+
+            }
+
+            return text;
+
+        }
+
+        function formatMoney(value) {
+
+            return Number(
+                value || 0
+            ).toLocaleString(
+                "en-PH",
+                {
+                    style: "currency",
+                    currency: "PHP",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
+
+        }
+
+        function escapeHTML(value) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+    </script>
+
+</body>
+
+</html>
