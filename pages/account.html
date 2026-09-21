@@ -940,6 +940,8 @@
             const ADMIN_USERNAME =
                 "confitcreatives@gmail.com";
 
+            const PASSWORD_HASH_ALGORITHM = "SHA-256";
+
             let editingStaffId =
                 null;
 
@@ -1021,6 +1023,25 @@
                     )
                 );
 
+            }
+
+            async function hashPassword(value) {
+                if (!window.crypto || !window.crypto.subtle || !window.TextEncoder) {
+                    throw new Error("Secure password hashing is not available.");
+                }
+                const digest = await window.crypto.subtle.digest(
+                    PASSWORD_HASH_ALGORITHM,
+                    new TextEncoder().encode(String(value))
+                );
+                return Array.from(new Uint8Array(digest)).map(function(byte) {
+                    return byte.toString(16).padStart(2, "0");
+                }).join("");
+            }
+
+            async function passwordMatches(user, value) {
+                return user.passwordHash
+                    ? user.passwordHash === await hashPassword(value)
+                    : String(user.password || "") === String(value);
             }
 
             function renderAccounts() {
@@ -1258,7 +1279,10 @@
                     document.getElementById(
                         "staffPassword"
                     ).value =
-                        user.password || "";
+                        "";
+
+                    document.getElementById("staffPassword").required = false;
+                    document.getElementById("staffPassword").placeholder = "Leave blank to keep the current password";
 
                     document.getElementById(
                         "staffModal"
@@ -1360,6 +1384,9 @@
                         "staffForm"
                     ).reset();
 
+                    document.getElementById("staffPassword").required = true;
+                    document.getElementById("staffPassword").placeholder = "Password";
+
                     document.getElementById(
                         "staffModal"
                     ).classList.add(
@@ -1388,7 +1415,7 @@
                 "staffForm"
             ).addEventListener(
                 "submit",
-                function(event) {
+                async function(event) {
 
                     event.preventDefault();
 
@@ -1460,12 +1487,28 @@
                             user.username =
                                 username;
 
-                            user.password =
-                                password;
+                            if (password) {
+                                try {
+                                    user.passwordHash = await hashPassword(password);
+                                    user.passwordHashAlgorithm = PASSWORD_HASH_ALGORITHM;
+                                    delete user.password;
+                                } catch (hashError) {
+                                    alert("Secure password hashing is unavailable in this browser.");
+                                    return;
+                                }
+                            }
 
                         }
 
                     } else {
+
+                        let passwordHash;
+                        try {
+                            passwordHash = await hashPassword(password);
+                        } catch (hashError) {
+                            alert("Secure password hashing is unavailable in this browser.");
+                            return;
+                        }
 
                         users.push({
 
@@ -1479,8 +1522,9 @@
                             username:
                                 username,
 
-                            password:
-                                password,
+                            passwordHash: passwordHash,
+
+                            passwordHashAlgorithm: PASSWORD_HASH_ALGORITHM,
 
                             role:
                                 "Staff",
@@ -1545,7 +1589,7 @@
                 "passwordForm"
             ).addEventListener(
                 "submit",
-                function(event) {
+                async function(event) {
 
                     event.preventDefault();
 
@@ -1590,10 +1634,15 @@
                             "confirmPassword"
                         ).value;
 
-                    if (
-                        current !==
-                        admin.password
-                    ) {
+                    let currentMatches = false;
+                    try {
+                        currentMatches = await passwordMatches(admin, current);
+                    } catch (hashError) {
+                        alert("Secure password verification is unavailable in this browser.");
+                        return;
+                    }
+
+                    if (!currentMatches) {
 
                         alert(
                             "Current password is incorrect."
@@ -1626,8 +1675,14 @@
                         return;
                     }
 
-                    admin.password =
-                        newPassword;
+                    try {
+                        admin.passwordHash = await hashPassword(newPassword);
+                        admin.passwordHashAlgorithm = PASSWORD_HASH_ALGORITHM;
+                        delete admin.password;
+                    } catch (hashError) {
+                        alert("Secure password hashing is unavailable in this browser.");
+                        return;
+                    }
 
                     saveUsers(
                         users

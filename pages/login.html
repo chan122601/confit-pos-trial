@@ -941,6 +941,8 @@
             const ADMIN_USERNAME =
                 "confitcreatives@gmail.com";
 
+            const PASSWORD_HASH_ALGORITHM = "SHA-256";
+
             let administratorSetupRequired = false;
 
             function getUsers() { 
@@ -996,7 +998,7 @@
                 } 
 
                 administratorSetupRequired = administratorSetupRequired ||
-                    !administrator.password ||
+                    (!administrator.password && !administrator.passwordHash) ||
                     String(administrator.username || "").toLowerCase() === "admin";
 
                 if (String(administrator.username || "").toLowerCase() !== ADMIN_USERNAME) {
@@ -1007,6 +1009,24 @@
                 return users; 
 
             } 
+
+            async function hashPassword(value) {
+                if (!window.crypto || !window.crypto.subtle || !window.TextEncoder) {
+                    throw new Error("Secure password hashing is not available.");
+                }
+                const bytes = new TextEncoder().encode(String(value));
+                const digest = await window.crypto.subtle.digest(PASSWORD_HASH_ALGORITHM, bytes);
+                return Array.from(new Uint8Array(digest)).map(function(byte) {
+                    return byte.toString(16).padStart(2, "0");
+                }).join("");
+            }
+
+            async function passwordMatches(user, value) {
+                if (user.passwordHash) {
+                    return user.passwordHash === await hashPassword(value);
+                }
+                return String(user.password || "") === String(value);
+            }
 
             const existingSession = 
                 localStorage.getItem( 
@@ -1073,7 +1093,7 @@
                 confirmPasswordField.hidden = false;
                 confirmPassword.required = true;
                 loginHeading.textContent = "Set up your administrator account.";
-                loginDescription.textContent = "Create a password to secure your CONFIT POS administrator account.";
+                loginDescription.textContent = "Create a new administrator password to secure this CONFIT POS installation. Restored account details do not include passwords.";
                 loginButton.textContent = "Create Password";
             }
 
@@ -1107,7 +1127,7 @@
 
             form.addEventListener( 
                 "submit", 
-                function(event) { 
+                async function(event) {
 
                     event.preventDefault(); 
 
@@ -1149,34 +1169,37 @@
                         }
 
                         administrator.username = ADMIN_USERNAME;
-                        administrator.password = enteredPassword;
+                        try {
+                            administrator.passwordHash = await hashPassword(enteredPassword);
+                            administrator.passwordHashAlgorithm = PASSWORD_HASH_ALGORITHM;
+                            delete administrator.password;
+                        } catch (hashError) {
+                            error.textContent = "Secure password setup is unavailable in this browser.";
+                            error.classList.add("show");
+                            return;
+                        }
                         administrator.role = "Administrator";
                         administrator.status = "active";
                         localStorage.setItem(USERS_KEY, JSON.stringify(users));
                         administratorSetupRequired = false;
                     }
 
-                    const user = 
-                        users.find( 
-                            function(account) { 
+                    const user = users.find(function(account) {
+                        return String(account.username || "").toLowerCase() === enteredUsername.toLowerCase();
+                    });
 
-                                return ( 
-                                    String( 
-                                        account.username || 
-                                        "" 
-                                    ).toLowerCase() === 
-                                    enteredUsername.toLowerCase() && 
-                                    String( 
-                                        account.password || 
-                                        "" 
-                                    ) === 
-                                    enteredPassword 
-                                ); 
+                    let credentialsMatch = false;
+                    if (user) {
+                        try {
+                            credentialsMatch = await passwordMatches(user, enteredPassword);
+                        } catch (hashError) {
+                            error.textContent = "Secure password verification is unavailable in this browser.";
+                            error.classList.add("show");
+                            return;
+                        }
+                    }
 
-                            } 
-                        ); 
-
-                    if (!user) { 
+                    if (!user || !credentialsMatch) {
 
                         error.textContent = 
                             "Invalid username or password."; 
@@ -1212,6 +1235,19 @@
                         return; 
 
                     } 
+
+                    if (!user.passwordHash) {
+                        try {
+                            user.passwordHash = await hashPassword(enteredPassword);
+                            user.passwordHashAlgorithm = PASSWORD_HASH_ALGORITHM;
+                            delete user.password;
+                            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+                        } catch (hashError) {
+                            error.textContent = "Secure password migration is unavailable in this browser.";
+                            error.classList.add("show");
+                            return;
+                        }
+                    }
 
                     const session = { 
 

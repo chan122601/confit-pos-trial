@@ -101,6 +101,8 @@ loadSettings();
         "gonzcoreClothingSales",
         "gonzcoreClothingCustomers",
         "gonzcoreClothingExpenses",
+        "gonzcoreClothingCashDrawer",
+        "gonzcoreClothingCashClosings",
         "gonzcoreClothingUsers",
         "gonzcoreClothingCategories",
         "gonzcoreClothingStockDiscrepancies",
@@ -138,6 +140,9 @@ loadSettings();
             data.gonzcoreClothingUsers = data.gonzcoreClothingUsers.map(function(user) {
                 const safeUser = { ...user };
                 delete safeUser.password;
+                delete safeUser.passwordHash;
+                delete safeUser.passwordHashAlgorithm;
+                safeUser.credentialsRequired = true;
                 return safeUser;
             });
         }
@@ -178,7 +183,10 @@ loadSettings();
             return false;
         }
 
-        if (!BACKUP_KEYS.every(function(key) {
+        const requiredKeys = BACKUP_KEYS.filter(function(key) {
+            return key !== "gonzcoreClothingCashDrawer" && key !== "gonzcoreClothingCashClosings";
+        });
+        if (!requiredKeys.every(function(key) {
             return Object.prototype.hasOwnProperty.call(payload.data, key);
         })) return false;
 
@@ -187,6 +195,8 @@ loadSettings();
             "gonzcoreClothingSales",
             "gonzcoreClothingCustomers",
             "gonzcoreClothingExpenses",
+            "gonzcoreClothingCashDrawer",
+            "gonzcoreClothingCashClosings",
             "gonzcoreClothingUsers",
             "gonzcoreClothingCategories",
             "gonzcoreClothingStockDiscrepancies",
@@ -194,7 +204,7 @@ loadSettings();
         ];
 
         return arrayKeys.every(function(key) {
-            return payload.data[key] === null || Array.isArray(payload.data[key]);
+            return payload.data[key] === undefined || payload.data[key] === null || Array.isArray(payload.data[key]);
         }) && (payload.data.gonzcoreClothingSettings === null || (
             typeof payload.data.gonzcoreClothingSettings === "object" &&
             !Array.isArray(payload.data.gonzcoreClothingSettings)
@@ -216,9 +226,18 @@ loadSettings();
                 return (user.id && existing.id === user.id) ||
                     String(existing.username || "").toLowerCase() === String(user.username || "").toLowerCase();
             });
-            return current && Object.prototype.hasOwnProperty.call(current, "password")
-                ? { ...user, password: current.password }
-                : user;
+            if (!current) return user;
+            const merged = { ...user };
+            if (current.passwordHash) {
+                merged.passwordHash = current.passwordHash;
+                merged.passwordHashAlgorithm = current.passwordHashAlgorithm || "SHA-256";
+                delete merged.password;
+                delete merged.credentialsRequired;
+            } else if (current.password) {
+                merged.password = current.password;
+                delete merged.credentialsRequired;
+            }
+            return merged;
         });
     }
 
@@ -234,6 +253,7 @@ loadSettings();
         const data = payload.data;
 
         BACKUP_KEYS.forEach(function(key) {
+            if (!Object.prototype.hasOwnProperty.call(data, key)) return;
             let value = data[key];
             if (value === null) {
                 localStorage.removeItem(key);
@@ -316,7 +336,7 @@ loadSettings();
         if (!isAdministrator()) return;
         if (confirm("Reset All Data?\n\nThis will permanently remove the current CONFIT POS data.")) {
             if (!confirm("Are you absolutely sure? This action cannot be undone.")) return;
-            ["gonzcoreClothingInventory", "gonzcoreClothingSales", "gonzcoreClothingCustomers", "gonzcoreClothingExpenses", "gonzcoreClothingCategories", "gonzcoreClothingStockDiscrepancies", "gonzcoreClothingInventoryHistory", "gonzcoreClothingSettings"].forEach(function(key) { localStorage.removeItem(key); });
+            ["gonzcoreClothingInventory", "gonzcoreClothingSales", "gonzcoreClothingCustomers", "gonzcoreClothingExpenses", "gonzcoreClothingCashDrawer", "gonzcoreClothingCashClosings", "gonzcoreClothingCategories", "gonzcoreClothingStockDiscrepancies", "gonzcoreClothingInventoryHistory", "gonzcoreClothingSettings"].forEach(function(key) { localStorage.removeItem(key); });
             loadSettings();
             toast("All POS data has been reset");
         }

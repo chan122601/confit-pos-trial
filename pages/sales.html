@@ -1014,6 +1014,7 @@
 
     <script>
         const SALES_STORAGE_KEY = "gonzcoreClothingSales";
+        const SETTINGS_STORAGE_KEY = "gonzcoreClothingSettings";
 
         let sales = [];
         let selectedSale = null;
@@ -1388,6 +1389,7 @@
                             <span class="sale-total">
                                 ${formatMoney(sale.total)}
                             </span>
+                            ${Number(sale.discount || 0) > 0 ? `<div class="sale-reference">Discount: ${formatMoney(sale.discount)}</div>` : ""}
                         </td>
 
                         <td>
@@ -1651,6 +1653,22 @@
                 </div>
 
                 <div class="modal-total">
+                    <span>Subtotal</span>
+                    <strong>
+                        ${formatMoney(
+                            sale.subtotal !== undefined ? sale.subtotal : sale.total
+                        )}
+                    </strong>
+                </div>
+
+                <div class="sale-details" style="margin-top: 10px;">
+                    <div class="sale-detail-row">
+                        <span>Discount</span>
+                        <strong>${formatMoney(sale.discount)}</strong>
+                    </div>
+                </div>
+
+                <div class="modal-total">
                     <span>Total</span>
                     <strong>
                         ${formatMoney(
@@ -1720,6 +1738,14 @@
 
         function printSale(sale) {
 
+            let receiptSettings = {};
+            try { receiptSettings = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}"); } catch (error) { receiptSettings = {}; }
+            const storeName = escapeHTML(receiptSettings.storeName || "CONFIT STORE");
+            const storeDetails = [receiptSettings.storeAddress, receiptSettings.storePhone, receiptSettings.storeEmail].filter(Boolean).map(escapeHTML).join("<br>");
+            const customerLine = receiptSettings.showCustomer !== false ? `<div class="print-info-row"><span>Customer</span><strong>${escapeHTML(sale.customerName || "Walk-in Customer")}</strong></div>` : "";
+            const paymentLine = receiptSettings.showPaymentMethod !== false ? `<div class="print-summary-row"><span>Payment Method</span><strong>${sale.paymentMethod === "GCash" ? "GCash" : "Cash"}</strong></div>` : "";
+            const referenceLine = sale.paymentMethod === "GCash" && receiptSettings.showGcashReference !== false ? `<div class="print-summary-row"><span>GCash Reference</span><strong>${escapeHTML(sale.referenceNumber || "—")}</strong></div>` : "";
+
             const itemsHTML =
                 (sale.items || []).map(
                     function(item) {
@@ -1761,12 +1787,13 @@
 
                     <div class="print-header">
                         <h1>
-                            CONFIT STORE
+                            ${storeName}
                         </h1>
 
                         <p>
                             Sales Receipt
                         </p>
+                        ${storeDetails ? `<p>${storeDetails}</p>` : ""}
                     </div>
 
                     <div class="print-info">
@@ -1839,6 +1866,13 @@
                             </strong>
                         </div>
 
+                        ${customerLine}
+
+                        <div class="print-summary-row">
+                            <span>Tax</span>
+                            <strong>${formatMoney(sale.tax)}</strong>
+                        </div>
+
                         <div class="print-summary-row print-total">
                             <span>
                                 TOTAL
@@ -1851,19 +1885,11 @@
                             </strong>
                         </div>
 
-                        <div class="print-summary-row">
-                            <span>
-                                Payment Method
-                            </span>
-
-                            <strong>
-                                ${sale.paymentMethod === "GCash" ? "GCash" : "Cash"}
-                            </strong>
-                        </div>
+                        ${paymentLine}
 
                         ${
                             sale.paymentMethod === "GCash"
-                                ? `
+                                ? receiptSettings.showGcashReference !== false ? `
                                     <div class="print-summary-row">
                                         <span>
                                             GCash Reference
@@ -1874,6 +1900,7 @@
                                         </strong>
                                     </div>
                                 `
+                                : ""
                                 : `
                                     <div class="print-summary-row">
                                         <span>
@@ -1902,7 +1929,7 @@
                     <div class="print-footer">
 
                         <strong>
-                            Thank you for shopping with CONFIT Store!
+                            ${escapeHTML(receiptSettings.receiptFooter || "Thank you for shopping with CONFIT Store!")}
                         </strong>
 
                         <br>
