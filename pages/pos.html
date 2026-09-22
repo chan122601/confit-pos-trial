@@ -1610,7 +1610,6 @@
         const SALES_STORAGE_KEY = "gonzcoreClothingSales";
         const CUSTOMER_STORAGE_KEY = "gonzcoreClothingCustomers";
         const SETTINGS_STORAGE_KEY = "gonzcoreClothingSettings";
-        const CASH_CLOSINGS_STORAGE_KEY = "gonzcoreClothingCashClosings";
 
         let clothingProducts = [];
         let customers = [];
@@ -2492,11 +2491,6 @@
                 }
             }
 
-            if (isCashDrawerClosedToday()) {
-                alert("Today’s cash drawer is closed. Reopen it in Reports before completing another sale.");
-                return;
-            }
-
             if (posSettings.confirmSale && !confirm("Complete this sale for " + formatMoney(total) + "?")) {
                 return;
             }
@@ -2669,19 +2663,6 @@
             );
 
             return true;
-        }
-
-        function isCashDrawerClosedToday() {
-            const today = new Date();
-            const date = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
-            try {
-                const closings = JSON.parse(localStorage.getItem(CASH_CLOSINGS_STORAGE_KEY) || "[]");
-                return Array.isArray(closings) && closings.some(function(closing) {
-                    return closing.date === date && !closing.reopenedAt;
-                });
-            } catch (error) {
-                return false;
-            }
         }
 
         function getSelectedCustomer() {

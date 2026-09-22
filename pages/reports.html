@@ -209,34 +209,6 @@
                 </div>
             </div>
 
-            <section class="report-panel cash-drawer-panel">
-                <div class="panel-header"><div><span class="panel-label">CASH ON HAND</span><h3>Daily Cash Drawer</h3></div><div><span class="panel-note" id="cashDrawerDate"></span><button id="reopenCashDrawer" class="expense-action" type="button" hidden>Reopen Drawer</button></div></div>
-                <div class="cash-drawer-grid">
-                    <div class="cash-drawer-card"><span>OPENING CASH</span><strong id="drawerOpeningCash">₱0.00</strong><small>Starting float for today</small></div>
-                    <div class="cash-drawer-card"><span>CASH SALES</span><strong id="drawerCashSales">₱0.00</strong><small>GCash is excluded</small></div>
-                    <div class="cash-drawer-card"><span>CASH IN</span><strong id="drawerCashIn">₱0.00</strong><small>Less Cash Out: <span id="drawerCashOut">₱0.00</span></small></div>
-                    <div class="cash-drawer-card"><span>CASH EXPENSES</span><strong id="drawerCashExpenses">₱0.00</strong><small>Expenses recorded today</small></div>
-                    <div class="cash-drawer-card"><span>EXPECTED CASH ON HAND</span><strong id="drawerExpectedCash">₱0.00</strong><small>Opening + sales + in − out − expenses</small></div>
-                    <div class="cash-drawer-card"><span>CLOSING STATUS</span><strong id="drawerClosingStatus">Open</strong><small id="drawerClosingNote">Enter actual cash count to close.</small></div>
-                </div>
-                <form id="openingCashForm" class="cash-drawer-form">
-                    <div class="expense-field"><label for="openingCash">Opening Cash</label><input id="openingCash" class="expense-input" type="number" min="0" step="0.01" placeholder="0.00"></div>
-                    <div></div><div></div><button class="expense-submit" type="submit">Save Opening</button>
-                </form>
-                <form id="cashMovementForm" class="cash-drawer-form" style="margin-top:12px">
-                    <div class="expense-field"><label for="cashMovementType">Drawer Entry</label><select id="cashMovementType" class="expense-filter"><option value="cash-in">Cash In</option><option value="cash-out">Cash Out</option></select></div>
-                    <div class="expense-field"><label for="cashMovementDescription">Description</label><input id="cashMovementDescription" class="expense-input" maxlength="120" required placeholder="Reason for cash movement"></div>
-                    <div class="expense-field"><label for="cashMovementAmount">Amount</label><input id="cashMovementAmount" class="expense-input" type="number" min="0.01" step="0.01" required placeholder="0.00"></div>
-                    <button class="expense-submit" type="submit">Record Entry</button>
-                </form>
-                <form id="cashClosingForm" class="cash-drawer-form closing">
-                    <div class="expense-field"><label for="actualCashCount">Actual Cash Count</label><input id="actualCashCount" class="expense-input" type="number" min="0" step="0.01" placeholder="Count physical cash at close"></div>
-                    <div id="cashDifferencePreview" class="expense-total">Difference: ₱0.00</div>
-                    <button class="expense-submit" type="submit">Save Daily Closing</button>
-                </form>
-                <div class="cash-drawer-history" id="cashClosingHistory"></div>
-            </section>
-
             <section class="report-panel staff-performance-panel">
                 <div class="panel-header">
                     <div><span class="panel-label">STAFF PERFORMANCE</span><h3>Sales by Staff</h3></div>
@@ -339,8 +311,6 @@
         const INVENTORY_KEY = "gonzcoreClothingInventory";
         const CUSTOMERS_KEY = "gonzcoreClothingCustomers";
         const EXPENSES_KEY = "gonzcoreClothingExpenses";
-        const CASH_DRAWER_KEY = "gonzcoreClothingCashDrawer";
-        const CASH_CLOSINGS_KEY = "gonzcoreClothingCashClosings";
         let editingExpenseId = null;
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -348,11 +318,6 @@
             document.getElementById("refreshReport").addEventListener("click", loadReport);
             document.getElementById("expenseForm").addEventListener("submit", saveExpense);
             document.getElementById("cancelExpenseEdit").addEventListener("click", resetExpenseForm);
-            document.getElementById("openingCashForm").addEventListener("submit", saveOpeningCash);
-            document.getElementById("cashMovementForm").addEventListener("submit", saveCashMovement);
-            document.getElementById("cashClosingForm").addEventListener("submit", saveCashClosing);
-            document.getElementById("actualCashCount").addEventListener("input", updateCashDifferencePreview);
-            document.getElementById("reopenCashDrawer").addEventListener("click", reopenCashDrawer);
             document.getElementById("expenseDateFilter").addEventListener("change", function() {
                 toggleExpenseCustomDates();
                 loadReport();
@@ -367,7 +332,7 @@
         });
 
         window.addEventListener("storage", function(event) {
-            if ([SALES_KEY, INVENTORY_KEY, CUSTOMERS_KEY, EXPENSES_KEY, CASH_DRAWER_KEY, CASH_CLOSINGS_KEY].includes(event.key)) loadReport();
+            if ([SALES_KEY, INVENTORY_KEY, CUSTOMERS_KEY, EXPENSES_KEY].includes(event.key)) loadReport();
         });
 
         function readArray(key) {
@@ -394,7 +359,6 @@
             renderExpenses(expenses);
             updateFinancialSummary(sales, expenses);
             updateStaffPerformance(sales);
-            loadCashDrawer(sales, expenses);
         }
 
         function saveExpense(event) {
@@ -405,11 +369,6 @@
             const date = document.getElementById("expenseDate").value;
 
             if (!description || !Number.isFinite(amount) || amount <= 0 || !date) {
-                return;
-            }
-
-            if (isDrawerClosed(date)) {
-                alert("The cash drawer is closed for this date. Reopen the drawer before recording an expense.");
                 return;
             }
 
@@ -696,93 +655,6 @@
 
         function getCurrentSession() {
             try { return JSON.parse(localStorage.getItem("gonzcoreClothingSession") || "null") || {}; } catch (error) { return {}; }
-        }
-
-        function getCashDrawerDate() { return getExpenseDateKey(new Date()); }
-
-        function getActiveCashClosing(date) {
-            return readArray(CASH_CLOSINGS_KEY)
-                .filter(function(item) { return item.date === date && !item.reopenedAt; })
-                .sort(function(first, second) { return String(second.closedAt || "").localeCompare(String(first.closedAt || "")); })[0] || null;
-        }
-
-        function isDrawerClosed(date) { return !!getActiveCashClosing(date); }
-
-        function getDrawerSummary(sales, expenses) {
-            const date = getCashDrawerDate();
-            const entries = readArray(CASH_DRAWER_KEY).filter(function(entry) { return entry.date === date; });
-            const openingEntry = entries.filter(function(entry) { return entry.type === "opening"; }).slice(-1)[0];
-            const opening = Number(openingEntry && openingEntry.amount || 0);
-            const cashSales = sales.filter(function(sale) { return getSaleDateKey(sale) === date && String(sale.paymentMethod || "Cash").toLowerCase() !== "gcash"; }).reduce(function(sum, sale) { return sum + Number(sale.total || 0); }, 0);
-            const cashIn = entries.filter(function(entry) { return entry.type === "cash-in"; }).reduce(function(sum, entry) { return sum + Number(entry.amount || 0); }, 0);
-            const cashOut = entries.filter(function(entry) { return entry.type === "cash-out"; }).reduce(function(sum, entry) { return sum + Number(entry.amount || 0); }, 0);
-            const cashExpenses = expenses.filter(function(expense) { return String(expense.date || "") === date && String(expense.paymentMethod || "Cash").toLowerCase() !== "gcash"; }).reduce(function(sum, expense) { return sum + Number(expense.amount || 0); }, 0);
-            return { date: date, opening: opening, cashSales: cashSales, cashIn: cashIn, cashOut: cashOut, cashExpenses: cashExpenses, expected: opening + cashSales + cashIn - cashOut - cashExpenses };
-        }
-
-        function loadCashDrawer(sales, expenses) {
-            const summary = getDrawerSummary(sales, expenses);
-            const closing = getActiveCashClosing(summary.date);
-            document.getElementById("cashDrawerDate").textContent = new Date(summary.date + "T00:00:00").toLocaleDateString("en-PH", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-            [["drawerOpeningCash", summary.opening], ["drawerCashSales", summary.cashSales], ["drawerCashIn", summary.cashIn], ["drawerCashOut", summary.cashOut], ["drawerCashExpenses", summary.cashExpenses], ["drawerExpectedCash", summary.expected]].forEach(function(pair) { document.getElementById(pair[0]).textContent = formatMoney(pair[1]); });
-            document.getElementById("openingCash").value = summary.opening || "";
-            if (closing) document.getElementById("actualCashCount").value = Number(closing.actual || 0);
-            const status = document.getElementById("drawerClosingStatus"), note = document.getElementById("drawerClosingNote");
-            if (closing) { status.textContent = closing.status; status.className = "cash-status " + String(closing.status).toLowerCase(); note.textContent = "Actual " + formatMoney(closing.actual) + " • Difference " + formatMoney(closing.difference); }
-            else { status.textContent = "Open"; status.className = ""; note.textContent = "Enter actual cash count to close."; }
-            document.getElementById("reopenCashDrawer").hidden = !closing;
-            updateCashDifferencePreview(summary.expected);
-            renderCashClosingHistory();
-        }
-
-        function saveOpeningCash(event) {
-            event.preventDefault(); const amount = Number(document.getElementById("openingCash").value); if (!Number.isFinite(amount) || amount < 0) return;
-            if (isDrawerClosed(getCashDrawerDate())) { alert("The cash drawer is closed for today. Reopen it before changing opening cash."); return; }
-            const entries = readArray(CASH_DRAWER_KEY), date = getCashDrawerDate(), session = getCurrentSession();
-            const entry = { id: "opening-" + date, type: "opening", amount: amount, date: date, description: "Opening cash", staffId: session.id || "", staffName: session.name || session.username || "", timestamp: new Date().toISOString() };
-            const index = entries.findIndex(function(item) { return item.type === "opening" && item.date === date; }); if (index === -1) entries.unshift(entry); else entries[index] = entry;
-            localStorage.setItem(CASH_DRAWER_KEY, JSON.stringify(entries)); loadReport();
-        }
-
-        function saveCashMovement(event) {
-            event.preventDefault(); const amount = Number(document.getElementById("cashMovementAmount").value), description = document.getElementById("cashMovementDescription").value.trim(); if (!description || !Number.isFinite(amount) || amount <= 0) return;
-            if (isDrawerClosed(getCashDrawerDate())) { alert("The cash drawer is closed for today. Reopen it before recording Cash In or Cash Out."); return; }
-            const session = getCurrentSession(), entries = readArray(CASH_DRAWER_KEY);
-            entries.unshift({ id: "drawer-" + Date.now(), type: document.getElementById("cashMovementType").value, amount: amount, description: description, date: getCashDrawerDate(), staffId: session.id || "", staffName: session.name || session.username || "", staffRole: session.role || "", timestamp: new Date().toISOString() });
-            localStorage.setItem(CASH_DRAWER_KEY, JSON.stringify(entries)); event.target.reset(); loadReport();
-        }
-
-        function updateCashDifferencePreview(expected) {
-            if (expected === undefined) expected = getDrawerSummary(readArray(SALES_KEY), readArray(EXPENSES_KEY)).expected;
-            const actual = Number(document.getElementById("actualCashCount").value), difference = Number.isFinite(actual) ? actual - expected : 0;
-            const label = !Number.isFinite(actual) ? "Difference" : difference < 0 ? "Short" : difference > 0 ? "Over" : "Exact";
-            document.getElementById("cashDifferencePreview").textContent = label + ": " + formatMoney(difference);
-        }
-
-        function saveCashClosing(event) {
-            event.preventDefault(); const actual = Number(document.getElementById("actualCashCount").value); if (!Number.isFinite(actual) || actual < 0) return;
-            const summary = getDrawerSummary(readArray(SALES_KEY), readArray(EXPENSES_KEY)), difference = actual - summary.expected, session = getCurrentSession();
-            const closing = { date: summary.date, opening: summary.opening, cashSales: summary.cashSales, cashIn: summary.cashIn, cashOut: summary.cashOut, cashExpenses: summary.cashExpenses, expected: summary.expected, actual: actual, difference: difference, status: difference < 0 ? "Short" : difference > 0 ? "Over" : "Exact", closedBy: session.name || session.username || "", staffId: session.id || "", closedAt: new Date().toISOString() };
-            const closings = readArray(CASH_CLOSINGS_KEY), index = closings.findIndex(function(item) { return item.date === closing.date && !item.reopenedAt; }); if (index === -1) closings.unshift(closing); else closings[index] = { ...closings[index], ...closing };
-            localStorage.setItem(CASH_CLOSINGS_KEY, JSON.stringify(closings)); loadReport();
-        }
-
-        function reopenCashDrawer() {
-            const closings = readArray(CASH_CLOSINGS_KEY);
-            const closing = getActiveCashClosing(getCashDrawerDate());
-            if (!closing || !confirm("Reopen today’s cash drawer? New transactions will require a new closing.")) return;
-            const session = getCurrentSession();
-            const index = closings.indexOf(closing);
-            if (index === -1) return;
-            closings[index] = { ...closing, status: "Reopened", reopenedAt: new Date().toISOString(), reopenedBy: session.name || session.username || "", reopenedById: session.id || "" };
-            localStorage.setItem(CASH_CLOSINGS_KEY, JSON.stringify(closings));
-            loadReport();
-        }
-
-        function renderCashClosingHistory() {
-            const closings = readArray(CASH_CLOSINGS_KEY).sort(function(first, second) { return String(second.date).localeCompare(String(first.date)); }), container = document.getElementById("cashClosingHistory");
-            if (!closings.length) { container.innerHTML = '<div class="expense-empty">No daily cash closings recorded yet.</div>'; return; }
-            container.innerHTML = `<table><thead><tr><th>Date</th><th>Expected</th><th>Actual</th><th>Difference</th><th>Status</th><th>Closed By</th></tr></thead><tbody>${closings.map(function(item) { return `<tr><td>${escapeHTML(formatExpenseDate(item.date))}</td><td>${formatMoney(item.expected)}</td><td>${formatMoney(item.actual)}</td><td>${formatMoney(item.difference)}</td><td><span class="cash-status ${String(item.status || "").toLowerCase()}">${escapeHTML(item.status || "")}</span></td><td>${escapeHTML(item.closedBy || "Unassigned/Unknown")}</td></tr>`; }).join("")}</tbody></table>`;
         }
 
         function updateSummary(sales) {
