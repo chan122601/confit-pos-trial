@@ -212,6 +212,48 @@
             animation: logoPulse 4s ease-in-out infinite; 
         } 
 
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            border-radius: inherit;
+            mix-blend-mode: screen;
+        }
+
+        .confit-logo-large {
+            width: min(430px, 82%);
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+            mix-blend-mode: screen;
+            filter: drop-shadow(0 0 28px rgba(196,181,253,.22));
+            animation: confitLogoIn 1s .15s ease both, confitLogoFloat 5s 1.2s ease-in-out infinite;
+        }
+
+        @keyframes confitLogoIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(.92);
+                filter: blur(8px) drop-shadow(0 0 10px rgba(196,181,253,.08));
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0) drop-shadow(0 0 28px rgba(196,181,253,.22));
+            }
+        }
+
+        @keyframes confitLogoFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
         .brand-name strong { 
             display: block; 
             color: #ffffff; 
@@ -649,8 +691,12 @@
                 padding: 50px 0 25px; 
             } 
 
-            .showcase-copy h1 { 
-                font-size: 46px; 
+            .showcase-copy h1 {
+                font-size: 46px;
+            }
+
+            .confit-logo-large {
+                width: min(330px, 78%);
             } 
 
             .showcase-copy p { 
@@ -683,8 +729,12 @@
                 padding: 25px; 
             } 
 
-            .showcase-copy h1 { 
-                font-size: 39px; 
+            .showcase-copy h1 {
+                font-size: 39px;
+            }
+
+            .confit-logo-large {
+                width: min(270px, 78%);
             } 
 
             .showcase-copy p { 
@@ -710,7 +760,8 @@
         @media (prefers-reduced-motion: reduce) { 
             .login-page, 
             .login-content, 
-            .brand-logo, 
+            .brand-logo,
+            .confit-logo-large,
             .showcase-orb, 
             .showcase-orb-two, 
             .fashion-card { 
@@ -744,8 +795,8 @@
 
                 <div class="brand-mark"> 
 
-                    <div class="brand-logo"> 
-                        C 
+                    <div class="brand-logo">
+                        <img src="../assets/confit-logo.jpg" alt="CONFIT">
                     </div> 
 
                     <div class="brand-name"> 
@@ -757,21 +808,9 @@
 
             </div> 
 
-            <div class="showcase-copy"> 
+            <div class="showcase-copy">
 
-                <div class="showcase-eyebrow"> 
-                    Smart Retail Experience 
-                </div> 
-
-                <h1> 
-                    CONFIT <span>CREATIIVES.</span> 
-                </h1> 
-
-                <p> 
-                    A modern point-of-sale experience designed for clothing businesses. 
-                    Manage sales, customers, products, inventory and daily operations 
-                    from one place. 
-                </p> 
+                <img class="confit-logo-large" src="../assets/confit-logo.jpg" alt="CONFIT">
 
             </div> 
 
@@ -939,7 +978,7 @@
                 "gonzcoreClothingSession"; 
 
             const ADMIN_USERNAME =
-                "confitcreatives@gmail.com";
+                "confitph@gmail.com";
 
             const PASSWORD_HASH_ALGORITHM = "SHA-256";
 

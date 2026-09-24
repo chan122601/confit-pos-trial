@@ -1,0 +1,45 @@
+{
+    "name": "confit-pos-electron",
+    "version": "1.0.0",
+    "description": "CONFIT POS System",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/chan122601/confit-pos-trial.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/chan122601/confit-pos-trial/issues"
+    },
+    "homepage": "https://github.com/chan122601/confit-pos-trial#readme",
+    "devDependencies": {
+        "electron": "^44.4.3",
+        "electron-builder": "^26.15.3"
+    },
+    "build": {
+        "appId": "com.confit.pos",
+        "productName": "CONFIT POS",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "**/*",
+            "!dist/**/*"
+        ],
+        "win": {
+            "target": "nsis"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true
+        }
+    }
+}
